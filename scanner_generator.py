@@ -93,28 +93,28 @@ class NFA:
 
         return DFA(Q_DFA, self.Sigma, delta_DFA, q0_DFA, F_DFA, self.name)
 
-def regex_Extractor(fileName):
-    pass
+def tokenize(input_string, DFA_list):
+    token = []
+    temp = ""
+    for character in input_string:
+        temp = temp + character
+        for DFA in DFA_list:
+            if(DFA.accept(temp)):
+                token.append((DFA.name,temp))
+                temp = ""
+                break
 
-def tokenize(input_string, DFA):
-    print(DFA.name)
+    print(token)
+
 
 def create_automaton(regex):
     pass
 
 if __name__ == '__main__':
+    #########################################################
     Q = {0, 1, 2}  # set of states
     Sigma = {'a', 'b', 'c'}  # alphabet (set of input characters)
-    delta = {(0, 'a'): 0,  # transition function
-                (0, 'b'): 1,
-                (1, 'a'): 1,
-                (1, 'b'): 1,
-                (1, 'c'): 2
-                }
-    q0 = 0  # starting state
-    F = {2}  # set of accepting states
-
-    delta_NFA2 = {
+    delta_NFA1 = {
         (0, ''): {2},
         (0, 'a'): {0, 1},
         (1, 'a'): {1},
@@ -122,11 +122,14 @@ if __name__ == '__main__':
         (1, 'c'): {2},
         (2, ''): {1}
     }
+    q0 = 0  # starting state
+    F = {2}  # set of accepting states
+    ###########################################################
 
-    N2 = NFA(Q, Sigma, delta_NFA2, q0, F, "tester")
+    N2 = NFA(Q, Sigma, delta_NFA1, q0, F, "tester")
     print(N2.accept('abcabaabac'))
 
     D2 = N2.convert_to_DFA()
-    print(D2.accept('bbc'))
+    print(D2.accept('a'))
 
-    tokenize('abcabaabac', D2)
+    tokenize('abcabaabacbac', [D2, D2])
