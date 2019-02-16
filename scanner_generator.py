@@ -99,10 +99,15 @@ def tokenize(input_string, DFA_list):
     for character in input_string:
         temp = temp + character
         for DFA in DFA_list:
-            if(DFA.accept(temp)):
-                token.append((DFA.name,temp))
-                temp = ""
-                break
+            try:
+                if(DFA.accept(temp)):
+                    token.append((DFA.name,temp))
+                    temp = ""
+                    break
+            except(KeyError):
+                pass
+        if(character == " "):
+            temp = ""
 
     print(token)
 
@@ -112,24 +117,43 @@ def create_automaton(regex):
 
 if __name__ == '__main__':
     #########################################################
-    Q = {0, 1, 2}  # set of states
-    Sigma = {'a', 'b', 'c'}  # alphabet (set of input characters)
+    #a*bab
+    Q = {0, 1, 2, 3}  # set of states
+    Sigma = {'a', 'b'}  # alphabet (set of input characters)
     delta_NFA1 = {
-        (0, ''): {2},
-        (0, 'a'): {0, 1},
-        (1, 'a'): {1},
-        (1, 'b'): {1},
-        (1, 'c'): {2},
-        (2, ''): {1}
+        (0, 'a'): {0},
+        (0, 'b'): {1},
+        (1, 'a'): {2},
+        (2, 'b'): {3}
+
     }
     q0 = 0  # starting state
-    F = {2}  # set of accepting states
+    F = {3}  # set of accepting states
     ###########################################################
 
-    N2 = NFA(Q, Sigma, delta_NFA1, q0, F, "tester")
-    print(N2.accept('abcabaabac'))
+    #########################################################
+    #(ac)*
+    Q2 = {0, 1, 2}  # set of states
+    Sigma2 = {'a', 'c'}  # alphabet (set of input characters)
+    delta_NFA2 = {
+        (0, 'a'): {1},
+        (1, 'c'): {2},
+        (2, ''): {0}
+    }
+    q02 = 0  # starting state
+    F2 = {2}  # set of accepting states
+    ###########################################################
 
+    N1 = NFA(Q, Sigma, delta_NFA1, q0, F, "1")
+    N2 = NFA(Q2, Sigma2, delta_NFA2, q02, F2, "2")
+    #print(N1.accept('abab'))
+    #print(N1.accept('ababa'))
+    #print(N1.accept('aaaaaaaabab'))
+    #print(N2.accept('acacacacac'))
+    #print(N2.accept('aaccac'))
+    #print(N2.accept('ac'))
+    D1 = N1.convert_to_DFA()
     D2 = N2.convert_to_DFA()
-    print(D2.accept('a'))
+    #print(D2.accept('a'))
 
-    tokenize('abcabaabacbac', [D2, D2])
+    tokenize('aabab ba aaaaababababbabacacbabababababacacacacacababababbabacabab', [D1, D2])
