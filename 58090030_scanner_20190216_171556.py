@@ -1,5 +1,9 @@
+regex_list = [[{0,1,2,3},{'a','b'},{(0, 'a'): {0},(0, 'b'): {1},(1, 'a'): {2},(2, 'b'): {3}},0,{3},'a*bab'],[{0, 1, 2},{'a', 'c'},{(0, 'a'): {1},(1, 'c'): {2},(2, ''): {0}},0,{2},'(ac)*']]
+
+
 class DFA:
-    def __init__(self, Q, Sigma, delta, q0, F):
+    def __init__(self, Q, Sigma, delta, q0, F, type):
+        self.name = type
         self.Q = Q  # set of states
         self.Sigma = Sigma  # alphabet (set of input characters)
         self.delta = delta  # transition function
@@ -24,7 +28,8 @@ class DFA:
         return q in self.F
 
 class NFA:
-    def __init__(self, Q, Sigma, delta, q0, F):
+    def __init__(self, Q, Sigma, delta, q0, F, type):
+        self.name = type
         self.Q = Q  # set of states
         self.Sigma = Sigma  # alphabet (set of input characters)
         self.delta = delta  # transition function
@@ -89,55 +94,38 @@ class NFA:
 
         F_DFA = set(q for q in Q_DFA if any(qf in q for qf in self.F))
 
-        return DFA(Q_DFA, self.Sigma, delta_DFA, q0_DFA, F_DFA)
+        return DFA(Q_DFA, self.Sigma, delta_DFA, q0_DFA, F_DFA, self.name)
 
-    def regex_Extractor(fileName):
-        pass
+def tokenize(input_string, DFA_list):
+    token = []
+    temp = ""
+    for character in input_string:
+        temp = temp + character
+        for DFA in DFA_list:
+            try:
+                if(DFA.accept(temp)):
+                    token.append((DFA.name,temp))
+                    temp = ""
+                    break
+            except(KeyError):
+                pass
+        if(character == " "):
+            temp = ""
 
-    def tokenize(input_string):
-        pass
-
-    def create_automaton(regex):
-        pass
+    return token
 
 if __name__ == '__main__':
-    Q = {0, 1, 2}  # set of states
-    Sigma = {'a', 'b', 'c'}  # alphabet (set of input characters)
-    delta = {(0, 'a'): 0,  # transition function
-                (0, 'b'): 1,
-                (1, 'a'): 1,
-                (1, 'b'): 1,
-                (1, 'c'): 2
-                }
-    q0 = 0  # starting state
-    F = {2}  # set of accepting states
 
-    delta_NFA2 = {
-        (0, ''): {2},
-        (0, 'a'): {0, 1},
-        (1, 'a'): {1},
-        (1, 'b'): {1},
-        (1, 'c'): {2},
-        (2, ''): {1}
-    }
+    print("REGEX Rules: ",end = "")
 
-    N2 = NFA(Q, Sigma, delta_NFA2, q0, F)
+    DFA_list = []
 
-    print(N2.accept('bbc'))
+    for each_regex in regex_list:
+        temp = NFA(each_regex[0],each_regex[1],each_regex[2],each_regex[3],each_regex[4],each_regex[5])
+        DFA_list.append(temp.convert_to_DFA())
+        print(each_regex[5], end = " ")
 
-    D2 = N2.convert_to_DFA()
-
-    print(D2.accept('bbc'))
-
-    # Q = {0, 1, 2}  # set of states
-    # Sigma = {'a', 'b', 'c'}  # alphabet (set of input characters)
-    # delta = {(0, 'a'): 0,  # transition function
-    #          (0, 'b'): 1,
-    #          (1, 'a'): 1,
-    #          (1, 'b'): 1,
-    #          (1, 'c'): 2
-    #          }
-    # q0 = 0  # starting state
-    # F = {2}  # set of accepting states
-    # D = DFA(Q, Sigma, delta, q0, F)
-    # print(D.accept('ac'))
+    while(True):
+        inp = input("\nPlease enter string to tokenize: ")
+        print()
+        print(tokenize(inp, DFA_list))

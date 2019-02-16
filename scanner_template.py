@@ -1,3 +1,5 @@
+regex_list = [[{0,1,2,3},{'a','b'},{(0, 'a'): {0},(0, 'b'): {1},(1, 'a'): {2},(2, 'b'): {3}},0,{3},"a*bab"],
+              [{0, 1, 2},{'a', 'c'},{(0, 'a'): {1},(1, 'c'): {2},(2, ''): {0}},0,{2},"(ac)*"]]
 
 class DFA:
     def __init__(self, Q, Sigma, delta, q0, F, type):
@@ -127,3 +129,5 @@ if __name__ == '__main__':
         inp = input("\nPlease enter string to tokenize: ")
         print()
         print(tokenize(inp, DFA_list))
+
+    #'aabab ba aaaaababababbabacacbabababababacacacacacababababbabacabab'
