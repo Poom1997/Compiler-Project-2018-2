@@ -14,12 +14,13 @@ def readFile(fileName):
     regex_list = []
     for line in regex:
         for character in line:
-            temp = temp + character
+            if(character != " " and character != "\n"):
+                temp = temp + character
             if(character == " "):
                 temp_name = temp
                 temp = ""
         temp_expr = temp
-        regex_list.append((temp_name[0:-1], temp_expr))
+        regex_list.append((temp_name, temp_expr))
         temp = ""
         temp_name = ""
         temp_expr = ""
