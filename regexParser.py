@@ -65,29 +65,33 @@ def parse(regex):
             for i in range(0, and_count):
                 temp.append(stack.pop())
                 #print("TMP ", temp)
-            if(depth != 0):
-                #print(depth)
-                temp_list[depth].append(temp[::-1])
-                depth -= 1
-                #print("TL", temp_list)
-                and_count = 0
-                stack.pop()
-                #print("LS", len(temp_list))
-                #print(main_list)
-                #print(main_depth)
-                if(main_depth == 0):
-                    main_list.append(temp_list.pop())
+            #print("TMP ", temp)
+            if(len(temp)>0):
+                if(depth != 0):
+                    #print(depth)
+                    temp_list[depth].append(temp[::-1])
+                    depth -= 1
+                    #print("TL", temp_list)
+                    and_count = 0
+                    stack.pop()
+                    #print("LS", len(temp_list))
+                    #print(main_list)
+                    #print(main_depth)
+                    if(main_depth == 0):
+                        main_list.append(temp_list.pop())
+                    else:
+                        main_list[main_depth].append(temp_list.pop())
+                    #print(main_list)
                 else:
-                    main_list[main_depth].append(temp_list.pop())
-                #print(main_list)
-            else:
-                main_list.append(temp.pop())
-                main_depth += 1
+                    if(main_depth == 0):
+                        main_list.append(temp.pop())
+                    else:
+                        main_list[main_depth].append(temp.pop())
+                    main_depth += 1
 
         else:
             and_count += 1
             stack.push(character)
-
 
         #print(iteration)
         #stack.print_value()
