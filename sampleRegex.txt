@@ -1,0 +1,2 @@
+regex1 (a|b|cd*)(ab)*
+regex2 none
