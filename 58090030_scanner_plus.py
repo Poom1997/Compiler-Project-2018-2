@@ -1,3 +1,5 @@
+regex_list = [[{0,1,2,3,4,5,6,7,8,9,10,11,12,13},{'b','a','+'},{(0, 'a'): {1},(1, ''): {5},(2, 'b'): {3},(3, ''): {5},(4, ''): {0, 2},(5, ''): {12},(6, 'a'): {7},(7, ''): {11},(8, 'b'): {9},(9, ''): {11},(10, ''): {8, 6},(11, ''): {10, 13},(12, ''): {0, 10}},12,{13},"t_id"],[{0,1},{'+'},{(0, '+'): {1}},0,{1},"t_plus"]]
+
 #regex_list = [[{0,1,2,3},{'a','b'},{(0, 'a'): {0},(0, 'b'): {1},(1, 'a'): {2},(2, 'b'): {3}},0,{3},"a*bab"],
               #[{0, 1, 2},{'a', 'c'},{(0, 'a'): {1},(1, 'c'): {2},(2, ''): {0}},0,{2},"(ac)*"]]
 
@@ -99,32 +101,35 @@ class NFA:
 def tokenize(input_string, DFA_list):
     token = []
     temp = ""
+    check = ""
     lastAccept = ""
     for character in input_string:
+        oldtemp = check
         temp = temp + character
         for DFA in DFA_list:
+            #print(temp)
             try:
-                if(not DFA.accept(temp)):
-                    if(lastAccept != ""):
-                        token.append((lastAccept,temp))
-                        temp = ""
-                        break
-                else:
+                if(DFA.accept(temp)):
+                    check = check + character
                     lastAccept = DFA.name
+                else:
+                    #print(temp)
+                    #print("rej")
+                    token.append((lastAccept, temp[0:-1]))
+                    temp = character
+                    check = ""
             except(KeyError):
                 pass
-        if(character == " "):
-            temp = ""
-
+                
     for DFA in DFA_list:
         try:
             if(DFA.accept(temp)):
-                token.append((DFA.name,temp))
-                break
-        except(KeyError):
-            pass
+                token.append((DFA.name, temp))
 
+        except(KeyError):
+            pass    
     return token
+
 if __name__ == '__main__':
 
     print("REGEX Rules: ",end = "")

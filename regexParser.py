@@ -25,9 +25,6 @@ class Stack:
 operator_list = ['(', '|', '*', ')', '_']
 operator_order = {'(' : 0, '_' : 1, '|' : 2, '*' : 3} #_ is concat
 
-def preprocess_Regex(regex):
-    pass
-
 def extract_alphabet(regex):
     alphabet = []
     for character in regex:
@@ -99,7 +96,7 @@ def thompson(regex, alphabet):
             delta.append({})
             stack.push([currentNode, nextNode])
             delta[toNode][(toNode,'')] = {fromNode, nextNode}
-            delta[currentNode][(currentNode,'')] = {fromNode, nextNode}
+            delta[currentNode][(currentNode,'')] = {fromNode}
             if startNode == fromNode:
                 startNode = currentNode
             if acceptNode == toNode:
@@ -113,13 +110,13 @@ def thompson(regex, alphabet):
             fromNode1 = toNode2
             stack.push([fromNode2, toNode1])
             elem = delta[toNode1]
-            delta.remove(elem)
+            del delta[toNode1]
             for key in elem.keys():
                 #print("KEY",key)
                 #print("ELIM-KEY ", elem.get(key) - 1)
-                temp = key
+                temp = key[1]
                 #print("TEMP", temp[1])
-                delta[fromNode1][(fromNode1, temp[1])] = {int(list(elem.get(key))[0]) - 1}
+                delta[fromNode1][(fromNode1, temp)] = {int(list(elem.get(key))[0]) - 1}
             cnt = cnt - 1
             if startNode == fromNode1:
                 startNode = fromNode2
@@ -155,7 +152,7 @@ def thompson(regex, alphabet):
         else:
             temp.append(element)
 
-    print(delta)
+    #print(delta)
     iteration = 0
     if(len(delta_temp)> 1):
         for each_set in delta_temp:
@@ -163,14 +160,14 @@ def thompson(regex, alphabet):
             if(iteration == len(delta_temp)):
                 break
             else:
-                print(each_set)
+                #print(each_set)
                 next_start = delta_temp[iteration][-2]
                 next_start_key = list(next_start.keys())[0]
                 next_start_values = list(next_start.values())[0]
                 this_start = each_set[-2]
                 this_start_key = list(this_start.keys())[0]
                 this_start_values = list(this_start.values())[0]
-                print(this_start_values)
+                #print(this_start_values)
                 this_begin = each_set[0]
                 this_begin_key = list(this_begin.keys())[0]
 
@@ -236,18 +233,26 @@ def formatter(name, delta, start, accept, alphabet):
 
     return output_string
 
-def parse(name, regex):
-
+def parse(name, regex, regexList):
     #print(regex)
     regex = change_to_Postfix(regex)
     #print(regex)
     regex = ''.join(regex)
     #print(regex)
+
     alphabet = extract_alphabet(regex)
     #print(alphabet)
     delta, startNode, acceptNode = thompson(regex, alphabet)
-    print(delta, startNode, acceptNode, alphabet)
-    output_string = formatter(name, delta, startNode, acceptNode, alphabet)
+    #print(delta, startNode, acceptNode, alphabet_all)
+    alphabet_all = []
+    if(regexList is not None):
+        for each_regex in regexList:
+            for items in extract_alphabet(each_regex[1]):
+                alphabet_all.append(items)
+        #print(alphabet_all)
+        output_string = formatter(name, delta, startNode, acceptNode, alphabet_all)
+    else:
+        output_string = formatter(name, delta, startNode, acceptNode, alphabet)
 
     return output_string
 

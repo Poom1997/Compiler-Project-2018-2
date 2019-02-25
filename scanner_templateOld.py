@@ -99,32 +99,35 @@ class NFA:
 def tokenize(input_string, DFA_list):
     token = []
     temp = ""
+    check = ""
     lastAccept = ""
     for character in input_string:
+        oldtemp = check
         temp = temp + character
         for DFA in DFA_list:
+            #print(temp)
             try:
-                if(not DFA.accept(temp)):
-                    if(lastAccept != ""):
-                        token.append((lastAccept,temp))
-                        temp = ""
-                        break
-                else:
+                if(DFA.accept(temp)):
+                    check = check + character
                     lastAccept = DFA.name
+                else:
+                    #print(temp)
+                    #print("rej")
+                    token.append((lastAccept, temp[0:-1]))
+                    temp = character
+                    check = ""
             except(KeyError):
                 pass
-        if(character == " "):
-            temp = ""
-
+                
     for DFA in DFA_list:
         try:
             if(DFA.accept(temp)):
-                token.append((DFA.name,temp))
-                break
-        except(KeyError):
-            pass
+                token.append((DFA.name, temp))
 
+        except(KeyError):
+            pass    
     return token
+
 if __name__ == '__main__':
 
     print("REGEX Rules: ",end = "")
