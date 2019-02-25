@@ -2,16 +2,18 @@ import datetime
 import regexParser as rp
 
 def regex_formatter(regex_list):
+    parse = 'regex_list = ['
     for regex in regex_list:
         name = regex[0]
         parsed = rp.parse(name, regex[1])
-        break
+        parse = parse + parsed + ','
+        parse = parse[:-1]
+        return parse + ']'
         
 def readFile(fileName):
     regex = open(fileName, 'r')
     temp = ""
     temp_name = ""
-    temp_expr = ""
     regex_list = []
     for line in regex:
         for character in line:
@@ -24,8 +26,10 @@ def readFile(fileName):
         regex_list.append((temp_name, temp_expr))
         temp = ""
         temp_name = ""
-        temp_expr = ""
-    regex_formatter(regex_list)
+        #print(regex_list)
+
+
+    generate_scanner(regex_formatter(regex_list))
     
 def generate_scanner(regex):
     time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
