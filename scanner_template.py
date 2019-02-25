@@ -103,7 +103,7 @@ def tokenize(input_string, DFA_list):
         temp = temp + character
         for DFA in DFA_list:
             try:
-                if(DFA.accept(temp)):
+                if(not DFA.accept(temp)):
                     token.append((DFA.name,temp))
                     temp = ""
                     break
