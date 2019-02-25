@@ -4,7 +4,7 @@ import regexParser as rp
 def regex_formatter(regex_list):
     for regex in regex_list:
         name = regex[0]
-        parsed = rp.parse(regex[1])
+        parsed = rp.parse(name, regex[1])
         break
         
 def readFile(fileName):

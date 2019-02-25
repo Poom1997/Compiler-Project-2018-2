@@ -69,6 +69,7 @@ def change_to_Postfix(regex):
 
 def thompson(regex, alphabet):
     delta = []
+    delta_temp = []
     stack = Stack()
 
     startNode = 0
@@ -85,7 +86,7 @@ def thompson(regex, alphabet):
             delta.append({})
             stack.push([currentNode, nextNode])
             #stack.print_value()
-            delta[currentNode][(currentNode,character)] = nextNode
+            delta[currentNode][(currentNode,character)] = {nextNode}
             #print(delta)
 
         elif character == '*':
@@ -97,8 +98,8 @@ def thompson(regex, alphabet):
             delta.append({})
             delta.append({})
             stack.push([currentNode, nextNode])
-            delta[toNode][(currentNode,'')] = {fromNode, nextNode}
-            delta[currentNode][(currentNode,'')] = {fromNode, nextNode}
+            delta[toNode][(toNode,'')] = {fromNode, nextNode}
+            delta[currentNode][(currentNode,'')] = {fromNode}
             if startNode == fromNode:
                 startNode = currentNode
             if acceptNode == toNode:
@@ -114,7 +115,11 @@ def thompson(regex, alphabet):
             elem = delta[toNode1]
             delta.remove(elem)
             for key in elem.keys():
-                delta[fromNode1][key] = elem.get(key) - 1
+                #print("KEY",key)
+                #print("ELIM-KEY ", elem.get(key) - 1)
+                temp = key
+                #print("TEMP", temp[1])
+                delta[fromNode1][(fromNode1, temp[1])] = {int(list(elem.get(key))[0]) - 1}
             cnt = cnt - 1
             if startNode == fromNode1:
                 startNode = fromNode2
@@ -141,16 +146,93 @@ def thompson(regex, alphabet):
                 acceptNode = nextNode
             #print(delta)
 
+    temp = []
     for element in delta:
-        print(element)
+        if(element == {}):
+            temp.append(element)
+            delta_temp.append(temp)
+            temp = []
+        else:
+            temp.append(element)
+
+    #print(delta_temp)
+    iteration = 0
+    if(len(delta_temp)> 1):
+        for each_set in delta_temp:
+            iteration += 1
+            if(iteration == len(delta_temp)):
+                break
+            else:
+                next_start = delta_temp[iteration][-2]
+                next_start_key = list(next_start.keys())[0]
+                next_start_values = list(next_start.values())[0]
+                this_start = each_set[-2]
+                this_start_key = list(this_start.keys())[0]
+                this_start_values = list(this_start.values())[0]
+                this_begin = each_set[0]
+                this_begin_key = list(this_begin.keys())[0]
+
+                #print(next_start)
+                #print(next_start_key[0])
+                #print(next_start_values)
+                #print(this_start_key[0])
+                #print(this_start_values)
+                #print(list(this_start_values)[0])
+                this_end = {(list(this_start_values)[0], '') : {next_start_key[0]}}
+                each_set[-1] = this_end
+
+                next_start_values.add(this_begin_key[0])
+                next_start[next_start_key] = next_start_values
+                startNode = next_start_key[0]
+                acceptNode = next_start_key[0]+1
+
+
+    delta = delta_temp
 
     return delta, startNode, acceptNode
 
-def formatter(list):
-   pass
+def formatter(name, delta, start, accept, alphabet):
+    #Get Q
+    Q = ''
+    for i in range(0,accept+1):
+        Q = Q + str(i) + ','
+    Q = '{' + Q[:-1] + '}'
+    print("Q: ", Q)
+
+    #get Sigma
+    Sigma = set(alphabet[1:])
+    temp = ''
+    for i in Sigma:
+        temp = temp + str(i) + ','
+    Sigma = '{' + temp[:-1] +'}'
+    print("Sigma: ", Sigma)
+
+    #getDelta
+    temp = '{'
+    for each_set in delta:
+        for each_pair in each_set:
+            temp = temp + str(each_pair)[1:-1] + ','
+
+    temp = temp[:-2] + '}'
+    delta = temp
+    print("Delta: ", delta)
+
+    #get q0
+    q0 = str(start)
+    print("q0: ", start)
+
+    #get F
+    F = '{' + str(accept) + '}'
+    print("F: ", F)
+
+    #get Name
+    name = str(name)
+    print("Name: ", name)
+
+    output_string = '['+ Q + ',' + Sigma + ',' + delta + ','
 
 
-def parse(regex):
+def parse(name, regex):
     #print(regex)
     regex = change_to_Postfix(regex)
     #print(regex)
@@ -158,6 +240,7 @@ def parse(regex):
     #print(regex)
     alphabet = extract_alphabet(regex)
     #print(alphabet)
-    automaton = thompson(regex, alphabet)
-    print(automaton)
+    delta, startNode, acceptNode = thompson(regex, alphabet)
+    print(delta, startNode, acceptNode, alphabet)
+    output_string = formatter(name, delta, startNode, acceptNode, alphabet)
 
