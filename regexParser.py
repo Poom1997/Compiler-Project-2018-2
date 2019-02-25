@@ -22,17 +22,11 @@ class Stack:
         else:
             return False
 
-operator_list = ['(', '|', '*', ')']
+operator_list = ['(', '|', '*', ')', '_']
 operator_order = {'(' : 0, '_' : 1, '|' : 2, '*' : 3} #_ is concat
-
-def thompson(n):
-    pass
 
 def preprocess_Regex(regex):
     pass
-
-def formatter(list):
-   pass
 
 def extract_alphabet(regex):
     alphabet = ['']
@@ -73,12 +67,97 @@ def change_to_Postfix(regex):
 
     return output
 
+def thompson(regex, alphabet):
+    delta = []
+    stack = Stack()
+
+    startNode = 0
+    acceptNode = 1
+    cnt = -1
+
+    for character in regex:
+        if character in alphabet:
+            cnt = cnt + 1
+            currentNode = cnt
+            cnt = cnt + 1
+            nextNode = cnt
+            delta.append({})
+            delta.append({})
+            stack.push([currentNode, nextNode])
+            #stack.print_value()
+            delta[currentNode][(currentNode,character)] = nextNode
+            #print(delta)
+
+        elif character == '*':
+            fromNode, toNode = stack.pop()
+            cnt = cnt + 1
+            currentNode = cnt
+            cnt = cnt + 1
+            nextNode = cnt
+            delta.append({})
+            delta.append({})
+            stack.push([currentNode, nextNode])
+            delta[toNode][(currentNode,'')] = {fromNode, nextNode}
+            delta[currentNode][(currentNode,'')] = {fromNode, nextNode}
+            if startNode == fromNode:
+                startNode = currentNode
+            if acceptNode == toNode:
+                acceptNode = nextNode
+            #print(delta)
+
+        elif character == '_':
+            fromNode1, toNode1 = stack.pop()
+            fromNode2, toNode2 = stack.pop()
+            toNode1 = fromNode1
+            fromNode1 = toNode2
+            stack.push([fromNode2, toNode1])
+            elem = delta[toNode1]
+            delta.remove(elem)
+            for key in elem.keys():
+                delta[fromNode1][key] = elem.get(key) - 1
+            cnt = cnt - 1
+            if startNode == fromNode1:
+                startNode = fromNode2
+            if acceptNode == toNode2:
+                acceptNode = toNode1
+            #print(delta)
+
+        else:
+            cnt = cnt + 1
+            currentNode = cnt
+            cnt = cnt + 1
+            nextNode = cnt
+            delta.append({})
+            delta.append({})
+            fromNode1, toNode1 = stack.pop()
+            fromNode2, toNode2 = stack.pop()
+            stack.push([currentNode, nextNode])
+            delta[currentNode][(currentNode,'')] = {fromNode2, fromNode1}
+            delta[toNode1][(toNode1,'')] = nextNode
+            delta[toNode2][(toNode2,'')] = nextNode
+            if startNode == fromNode1 or startNode == fromNode2:
+                startNode = currentNode
+            if acceptNode == toNode2 or acceptNode == toNode1:
+                acceptNode = nextNode
+            #print(delta)
+
+    for element in delta:
+        print(element)
+
+    return delta, startNode, acceptNode
+
+def formatter(list):
+   pass
+
+
 def parse(regex):
-    print(regex)
+    #print(regex)
     regex = change_to_Postfix(regex)
-    print(regex)
+    #print(regex)
     regex = ''.join(regex)
-    print(regex)
+    #print(regex)
     alphabet = extract_alphabet(regex)
-    print(alphabet)
+    #print(alphabet)
+    automaton = thompson(regex, alphabet)
+    print(automaton)
 
