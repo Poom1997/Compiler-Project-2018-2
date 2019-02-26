@@ -34,7 +34,7 @@ def regex_formatter(regex_list):
     for regex in regex_list:
         name = regex[0]
         regex = regex_preformatter(regex[1])
-        print(regex)
+        # print(regex)
         #return None
         #print(regex)
         parsed = rp.parse(name, regex, temp)
@@ -87,5 +87,5 @@ def generate_scanner(regex):
 
 if __name__ == '__main__':
     inp = input("Please enter file name (default is in sampleRegex.txt): ")
-    inp = "sampleRegex.txt"
+    #inp = "sampleRegex.txt"
     readFile(inp)

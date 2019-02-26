@@ -100,31 +100,33 @@ def tokenize(input_string, DFA_list):
     token = []
     temp = ""
     lastAccept = ""
-    for character in input_string:
-        temp = temp + character
+    count = 0
+    proceed = True
+    while(count != len(input_string)):
+        temp = temp + input_string[count]
+        #print(count)
+        #print(temp)
         for DFA in DFA_list:
             try:
-                if(not DFA.accept(temp)):
-                    if(lastAccept != ""):
-                        token.append((lastAccept,temp))
-                        temp = ""
-                        break
-                else:
+                if(DFA.accept(temp)):
                     lastAccept = DFA.name
+                    proceed = True
+                    break
+                else:
+                    proceed = False
             except(KeyError):
                 pass
-        if(character == " "):
+            
+        if(proceed == False):
+            token.append((lastAccept, temp[:-1]))
             temp = ""
+            proceed = True
+        else:
+            count += 1
 
-    for DFA in DFA_list:
-        try:
-            if(DFA.accept(temp)):
-                token.append((DFA.name,temp))
-                break
-        except(KeyError):
-            pass
-
+    token.append((lastAccept, temp))
     return token
+
 if __name__ == '__main__':
 
     print("REGEX Rules: ",end = "")
