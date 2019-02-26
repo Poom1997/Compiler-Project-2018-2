@@ -234,12 +234,11 @@ def formatter(name, delta, start, accept, alphabet):
     return output_string
 
 def parse(name, regex, regexList):
-    #print(regex)
+    print(regex)
     regex = change_to_Postfix(regex)
-    #print(regex)
+    print(regex)
     regex = ''.join(regex)
     #print(regex)
-
     alphabet = extract_alphabet(regex)
     #print(alphabet)
     delta, startNode, acceptNode = thompson(regex, alphabet)

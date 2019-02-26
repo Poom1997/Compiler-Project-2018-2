@@ -99,7 +99,7 @@ class NFA:
 def tokenize(input_string, DFA_list):
     token = []
     temp = ""
-    lastAccept = ""
+    lastAccept = None
     count = 0
     proceed = True
     while(count != len(input_string)):
@@ -117,9 +117,10 @@ def tokenize(input_string, DFA_list):
             except(KeyError):
                 pass
             
-        if(proceed == False):
+        if(proceed == False and lastAccept is not None):
             token.append((lastAccept, temp[:-1]))
             temp = ""
+            lastAccept = None
             proceed = True
         else:
             count += 1

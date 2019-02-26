@@ -1,1 +1,2 @@
-test_one a(a)a|c(bc)*a
+t_id (a|b)(a|b)*
+t_plus +

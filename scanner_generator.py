@@ -86,6 +86,7 @@ def generate_scanner(regex):
 
 
 if __name__ == '__main__':
-    inp = input("Please enter file name (default is in sampleRegex.txt): ")
-    #inp = "sampleRegex.txt"
+    inp = input("Please enter file name (default is sampleRegex.txt press enter to assign default): ")
+    if(inp == ''):
+        inp = "sampleRegex.txt"
     readFile(inp)
