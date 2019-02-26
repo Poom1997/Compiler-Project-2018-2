@@ -1,1 +1,1 @@
-test_one (a|bc)(cdf|e)
+test_one a(a)a|c(bc)*a
