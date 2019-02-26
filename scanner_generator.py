@@ -5,6 +5,7 @@ import regexParser as rp
 def regex_preformatter(regex):
     temp = ""
     iteration = 0
+    open = None
     operator_list = ['(', '|', '*', ')', '_']
     for character in regex:
         temp = temp + character
@@ -12,7 +13,15 @@ def regex_preformatter(regex):
             break
         if(regex[iteration+1] not in operator_list):
             if(character not in operator_list):
-                temp = temp + '_'
+                if(open is None):
+                    temp = temp[:-1] + '(' + character
+                    temp = temp + '_'
+                    open = ""
+                else:
+                    temp = temp + '_'
+        if (regex[iteration + 1] in operator_list and open == ""):
+            temp = temp + ')'
+            open = None
 
         iteration += 1
 
@@ -25,6 +34,8 @@ def regex_formatter(regex_list):
     for regex in regex_list:
         name = regex[0]
         regex = regex_preformatter(regex[1])
+        print(regex)
+        #return None
         #print(regex)
         parsed = rp.parse(name, regex, temp)
         parse = parse + parsed + ','
@@ -47,14 +58,15 @@ def readFile(fileName):
                 temp = temp + character
             if(character == " " and temp_name is None):
                 temp_name = temp
-                temp = ""
-        temp_expr = temp
+                temp = "("
+        temp_expr = temp + ')'
         regex_list.append((temp_name, temp_expr))
         temp = ""
         temp_name = None
 
-
-    generate_scanner(regex_formatter(regex_list))
+    new = regex_formatter(regex_list)
+    #return None
+    generate_scanner(new)
     
 def generate_scanner(regex):
 
@@ -75,4 +87,5 @@ def generate_scanner(regex):
 
 if __name__ == '__main__':
     inp = input("Please enter file name (default is in sampleRegex.txt): ")
+    inp = "sampleRegex.txt"
     readFile(inp)

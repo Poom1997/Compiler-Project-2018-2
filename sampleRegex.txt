@@ -1,2 +1,1 @@
-t_id (a|b)(a|b)*
-t_plus +
+test_one (a|bc)(cdf|e)

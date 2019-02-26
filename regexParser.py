@@ -23,7 +23,7 @@ class Stack:
             return False
 
 operator_list = ['(', '|', '*', ')', '_']
-operator_order = {'(' : 0, '_' : 1, '|' : 2, '*' : 3} #_ is concat
+operator_order = {'(' : 0, '|' : 1, '_' : 2, '*' : 3} #_ is concat
 
 def extract_alphabet(regex):
     alphabet = []
