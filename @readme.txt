@@ -6,6 +6,7 @@
 3) A scanner will be generated. 
 4) Please run the newly generated scanner 58090030_scanner_date_time.py and input the string to tokenize.
 
+**NOTE: Tokenize function uses greddy algorithm. **
 
 Thanks,
 58090030

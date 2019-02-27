@@ -141,7 +141,11 @@ if __name__ == '__main__':
 
     while(True):
         inp = input("\nPlease enter string to tokenize: ")
+        inp = inp.split()
+        temp = []
         print()
-        print(tokenize(inp, DFA_list))
+        for sets in inp:
+            temp = temp + tokenize(sets, DFA_list)
+        print(temp)
 
     #'aabab ba aaaaababababbabacacbabababababacacacacacababababbabacabab'
