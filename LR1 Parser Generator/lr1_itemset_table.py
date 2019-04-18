@@ -88,7 +88,7 @@ class Itemset_LR1:
                             rule[i],rule[i+1] = rule[i+1], rule[i]
                             temp.append(rule)
                             dot_moved = True
-                        if(i+1 == len(rule)-1 and rule[i+1] == "."):
+                        if(i+1 == len(rule)-1 and rule[i+1] == '.'):
                             haveNext = True
                         next_transition = self.id
 
@@ -100,14 +100,12 @@ class Itemset_LR1:
                 if (rule[j]== '.' and j != len(rule) - 1):
                     if (rule[j + 1] in non_terminal):
                         for rule2 in self.rules:
-                            if (rule[j + 1] == rule[0]):
+                            if (rule[j + 1] == rule2[0]):
                                 temp_item = []
-                                for k in range(len(rule)):
+                                for k in range(len(rule2)):
                                     if (k == 1):
                                         temp_item.append('.')
-
                                     temp_item.append(rule[k])
-
                                 temp.append(temp_item)
 
             explored_exist = self.checkExists(self.items, temp)
