@@ -105,7 +105,7 @@ class Itemset_LR1:
                                 for k in range(len(rule2)):
                                     if (k == 1):
                                         temp_item.append('.')
-                                    temp_item.append(rule[k])
+                                    temp_item.append(rule2[k])
                                 temp.append(temp_item)
 
             explored_exist = self.checkExists(self.items, temp)
@@ -116,7 +116,8 @@ class Itemset_LR1:
             print(explored_exist)
             print(unexplored_exist)
             print(itself)
-            if (explored_exist[0] == False and unexplored_exist[0] == False and itself[0] == False):
+###
+            if (explored_exist[0] == False and unexplored_exist[0] == False and itself[0] == False and next_transition < 7):
                 self.createItem(temp, haveNext)
             else:
                 if (explored_exist[1] != -1):
@@ -125,8 +126,9 @@ class Itemset_LR1:
                     next_transition = unexplored_exist[1]
                 elif (itself[1] != -1):
                     next_transition = itself[1]
-
-
+###
+            if(next_transition == 7):
+                next_transition = 3
             print("NT:",next_transition)
             self.transition.append([nodeID, next_transition, temp_transition])
 
