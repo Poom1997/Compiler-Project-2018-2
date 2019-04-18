@@ -42,7 +42,8 @@ class Itemset_LR1:
        # print(rule)
 
     def init_states(self):
-        temp = [self.rules[0]]
+        temp_deep = copy.deepcopy(self.rules)
+        temp = [temp_deep[0]]
         temp[0].insert(1, '.')
         start = temp[0]
         for i in range(0,len(start)):
@@ -137,37 +138,43 @@ class Itemset_LR1:
                     next_transition = itself[1]
 
             #print("NT:",next_transition)
-            self.transition.append([nodeID, next_transition, temp_transition])
+            self.transition.append([nodeID, temp_transition, next_transition])
 
         return True
 
-    def checkExists(self, big_array, temp_state):
-        to_item = -1  # not existing lr item
-        bigger_is_same = False
-        for rules in big_array:
-            state = rules.getRules()
-            for i in range(len(state)):
-                if (len(state) != len(temp_state)):
+    def checkExists(self, input_rules, temp_rule):
+        next_transition = -1
+        temp = False
+        for rules in input_rules:
+            rule = rules.getRules()
+            for i in range(len(rule)):
+                if (len(rule) != len(temp_rule)):
                     continue
                 is_same = True
 
-                for j in range(len(state[i])):
-                    if (len(state[i]) != len(temp_state[i])):
-                        is_same = False
-                        break
-                    if (state[i][j] != temp_state[i][j]):
+                for j in range(len(rule[i])):
+                    if (len(rule[i]) != len(temp_rule[i]) or rule[i][j] != temp_rule[i][j]):
                         is_same = False
                         break
 
-                # print("is same = ", is_same)
                 if (is_same == True):
-                    to_item = rules.getID()
-                    bigger_is_same = True
+                    next_transition = rules.getID()
+                    temp = True
                 else:
                     break
+        return (temp, next_transition)
 
-        response = [bigger_is_same, to_item]
-        return response
+    def getRules(self):
+        return self.rules
+
+    def getID(self):
+        return self.id
+
+    def getItems(self):
+        return self.items
+
+    def getTransitions(self):
+        return self.transition
 
     def viewItems(self):
         for item in self.items:
@@ -177,11 +184,22 @@ class Itemset_LR1:
         for transition in self.transition:
             print(transition)
 
+class ParsingTable:
+    def __init__(self, rules, transition, id, first, follow):
+        self.rules = rules
+        self.transition = transition
+        self.num = id
+        self.first = first
+        self.follow = follow
+
 def generateParsingTable(non_terminal, terminal, rules):
     ffg = FirstFollowGenerator(non_terminal, terminal, rules)
     lr1 = Itemset_LR1(non_terminal, terminal, rules)
     lr1.viewItems()
     lr1.viewTransitions()
+    print(lr1.getRules())
+    print(lr1.getID())
+
 
 non_terminal = ["S'", "S", "C"]
 terminal = ["c", "d"]
