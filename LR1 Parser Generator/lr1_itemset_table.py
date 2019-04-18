@@ -1,5 +1,5 @@
 from first_follow_generator import FirstFollowGenerator
-
+import copy
 class Item:
     def __init__(self, rules, id, next):
         self.rules = rules
@@ -16,9 +16,10 @@ class Item:
         return self.rules
 
     def getAll(self):
-        print("S", self.id, end = " : ")
-        print("Have_Next =", self.have_next(), end = " : ")
-        print("Rules =", self.rules)
+        print("S " + str(self.id), end = " : ")
+        print("Have_Next = " + str(self.end), end = " : ")
+        print("Rules = " + str(self.rules))
+
 
 class Itemset_LR1:
     def __init__(self, non_terminal, terminal, rules):
@@ -35,9 +36,10 @@ class Itemset_LR1:
 
 
     def createItem(self, rule, next):
-        item = Item(rule, self.id, next)
-        self.remaining.append(item)
+        temp_item = Item(rule, self.id, next)
+        self.remaining.append(temp_item)
         self.id = self.id + 1
+       # print(rule)
 
     def init_states(self):
         temp = [self.rules[0]]
@@ -61,17 +63,24 @@ class Itemset_LR1:
         self.createItem(temp, False)
 
     def expand_All_Items(self):
-        print(len(self.remaining))
+        #print(len(self.remaining))
+        #i = 0
         while(len(self.remaining) != 0):
+            #for item in self.items:
+                #item.getAll()
+                #pass
             currentNode = self.remaining.pop(0)
-            currentNodeX = Item(currentNode.getRules(), currentNode.getID(), currentNode.have_next())
-            self.currentNode = Item(currentNode.getRules(), currentNode.getID(), currentNode.have_next())
+            currentNodeX = copy.deepcopy(currentNode)
+            self.currentNode = copy.deepcopy(currentNode)
             if(currentNode.have_next()):
                 self.items.append(currentNode)
             else:
                 if(self.expand(currentNodeX)):
                     self.items.append(currentNode)
-
+            #if(i == 2):
+                #break
+            #i += 1
+            #currentNode.getAll()
     def expand(self, node):
         nodeID = node.getID()
         nodeRules = node.getRules()
@@ -110,14 +119,14 @@ class Itemset_LR1:
 
             explored_exist = self.checkExists(self.items, temp)
             unexplored_exist = self.checkExists(self.remaining, temp)
-            print(self.currentNode)
-            print(node)
+            #print(self.currentNode)
+            #print(node)
             itself = self.checkExists([self.currentNode], temp)
-            print(explored_exist)
-            print(unexplored_exist)
-            print(itself)
-###
-            if (explored_exist[0] == False and unexplored_exist[0] == False and itself[0] == False and next_transition < 7):
+            #print(explored_exist)
+            #print(unexplored_exist)
+            #print(itself)
+
+            if (explored_exist[0] == False and unexplored_exist[0] == False and itself[0] == False):
                 self.createItem(temp, haveNext)
             else:
                 if (explored_exist[1] != -1):
@@ -126,10 +135,8 @@ class Itemset_LR1:
                     next_transition = unexplored_exist[1]
                 elif (itself[1] != -1):
                     next_transition = itself[1]
-###
-            if(next_transition == 7):
-                next_transition = 3
-            print("NT:",next_transition)
+
+            #print("NT:",next_transition)
             self.transition.append([nodeID, next_transition, temp_transition])
 
         return True
@@ -164,14 +171,11 @@ class Itemset_LR1:
 
     def viewItems(self):
         for item in self.items:
-            print(item.getAll())
+            item.getAll()
 
     def viewTransitions(self):
         for transition in self.transition:
             print(transition)
-
-
-
 
 def generateParsingTable(non_terminal, terminal, rules):
     ffg = FirstFollowGenerator(non_terminal, terminal, rules)
