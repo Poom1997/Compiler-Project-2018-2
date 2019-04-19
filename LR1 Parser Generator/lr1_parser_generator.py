@@ -1,7 +1,5 @@
 import datetime
-import lr1_parser_generator as lr1
-
-data_test = ""
+from lr1_itemset_table_gen import MainLR1gen
 
 def readFile(fileName):
     grammar = open(fileName, 'r')
@@ -15,16 +13,17 @@ def readFile(fileName):
         temp_grammar.append(temp)
         temp = ""
 
+    #print(temp_grammar)
+    non_terminal = temp_grammar[0]
+    terminal = temp_grammar[1]
+    rules = temp_grammar[2:]
+    generate_parser(non_terminal, terminal, rules)
 
-    print(temp_grammar)
-    generate_parser()
-
-def generate_parser():
+def generate_parser(non_terminal, terminal, rules):
     data_temp = ""
-    data = open("temp.txt", 'r')
-    for line in data:
-        for character in line:
-            data_temp = data_temp + character
+    lr1 = MainLR1gen()
+
+    data = lr1.generateParsingTable(non_terminal, terminal, rules)
 
     time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     fileName = "58090030_lr1_parser_" + time + ".py"
@@ -34,7 +33,7 @@ def generate_parser():
     template = open(automaton_template, 'r')
     out_file = open(fileName, 'w')
 
-    data_dump = data_temp
+    data_dump = "table = " + data
     data_dump = data_dump + '\n\n' + template.read()
 
     out_file.write(data_dump)
