@@ -1,10 +1,18 @@
 from first_follow_generator import FirstFollowGenerator
+
 import copy
 class Item:
-    def __init__(self, rules, id, next):
+    def __init__(self, rules, id_inp, next, lookahead = '$'):
         self.rules = rules
-        self.id = id
+        self.id = id_inp
         self.end = next
+        self.lookahead = lookahead
+
+    def have_next(self):
+        return self.end
+
+    def getLookahead(self):
+        return self.lookahead
 
     def have_next(self):
         return self.end
@@ -22,7 +30,7 @@ class Item:
 
 
 class Itemset_LR1:
-    def __init__(self, non_terminal, terminal, rules):
+    def __init__(self, non_terminal, terminal, rules, ff):
         self.non_terminal = non_terminal
         self.terminal = terminal
         self.rules = rules
@@ -31,12 +39,13 @@ class Itemset_LR1:
         self.transition = []
         self.currentNode = []
         self.id = 0
+        self.first_follow = ff
         self.init_states()
         self.expand_All_Items()
 
 
-    def createItem(self, rule, next):
-        temp_item = Item(rule, self.id, next)
+    def createItem(self, rule, next, lookahead):
+        temp_item = Item(rule, self.id, next, lookahead)
         self.remaining.append(temp_item)
         self.id = self.id + 1
        # print(rule)
@@ -46,6 +55,8 @@ class Itemset_LR1:
         temp = [temp_deep[0]]
         temp[0].insert(1, '.')
         start = temp[0]
+        lookahead = temp[0][2]
+        print(lookahead)
         for i in range(0,len(start)):
             if(start[i] == '.'):
                 if(start[i+1] in non_terminal):
@@ -61,7 +72,8 @@ class Itemset_LR1:
                                 temp_expand.append(rule[j])
                             temp.append(temp_expand)
 
-        self.createItem(temp, False)
+        first_of_lookahead = self.first_follow.get_first_of(lookahead)
+        self.createItem(temp, False, first_of_lookahead)
 
     def expand_All_Items(self):
         #print(len(self.remaining))
@@ -128,7 +140,7 @@ class Itemset_LR1:
             #print(itself)
 
             if (explored_exist[0] == False and unexplored_exist[0] == False and itself[0] == False):
-                self.createItem(temp, haveNext)
+                self.createItem(temp, haveNext, self.first_follow.get_first_of(temp[0]))
             else:
                 if (explored_exist[1] != -1):
                     next_transition = explored_exist[1]
@@ -147,6 +159,7 @@ class Itemset_LR1:
         temp = False
         for rules in input_rules:
             rule = rules.getRules()
+            lookahead = rules.getLookahead()
             for i in range(len(rule)):
                 if (len(rule) != len(temp_rule)):
                     continue
@@ -193,8 +206,8 @@ class ParsingTable:
         self.follow = follow
 
 def generateParsingTable(non_terminal, terminal, rules):
-    ffg = FirstFollowGenerator(non_terminal, terminal, rules)
-    lr1 = Itemset_LR1(non_terminal, terminal, rules)
+    ff = FirstFollowGenerator(non_terminal, terminal, rules)
+    lr1 = Itemset_LR1(non_terminal, terminal, rules, ff)
     lr1.viewItems()
     lr1.viewTransitions()
     print(lr1.getRules())
